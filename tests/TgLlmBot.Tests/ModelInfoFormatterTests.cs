@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.Json;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,14 +56,7 @@ public class ModelInfoFormatterTests
     }
 
     [Fact]
-    public void ToolMetadata_IdentifiesTheModelLookupTool()
-    {
-        Assert.Equal("get_model_info", ModelInfoFormatter.ToolName);
-        Assert.Contains("модели", ModelInfoFormatter.ToolHelp, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void AddModelInfoTool_RegistersItOnlyUnderItsKey()
+    public void AddModelInfoTool_RegistersMetadataOnlyUnderItsKey()
     {
         var modelOptions = new ModelCommandHandlerOptions(
             new Uri("https://llm.example/v1"),
