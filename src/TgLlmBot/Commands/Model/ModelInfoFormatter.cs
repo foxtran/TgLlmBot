@@ -1,10 +1,17 @@
 using System;
 using System.Text;
+using System.Text.Json;
 
 namespace TgLlmBot.Commands.Model;
 
 public static class ModelInfoFormatter
 {
+    public const string ToolName = "get_model_info";
+
+    public const string ToolHelp = "Возвращает JSON с провайдером, идентификатором модели и её возможностями. Используй этот инструмент, если пользователь спрашивает, на какой модели ты работаешь.";
+
+    public const string ToolServiceKey = "model-info-tool";
+
     public static string Build(ModelCommandHandlerOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -17,6 +24,22 @@ public static class ModelInfoFormatter
         builder.Append("Видео: `").Append(options.Video).AppendLine("`");
         builder.Append("Аудио: `").Append(options.Audio).AppendLine("`");
         return builder.ToString();
+    }
+
+    public static string BuildToolResponse(ModelCommandHandlerOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        return JsonSerializer.Serialize(new
+        {
+            provider = GetBaseUrl(options.Endpoint),
+            model = options.Model,
+            capabilities = new
+            {
+                image = options.Image,
+                video = options.Video,
+                audio = options.Audio
+            }
+        });
     }
 
     private static string GetBaseUrl(Uri uri)

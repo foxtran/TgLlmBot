@@ -335,13 +335,13 @@ public partial class Program
         builder.Services.AddSingleton(new MediaRecognitionBackgroundServiceOptions(MediaSweepInterval, config.Telegram.BotName));
         builder.Services.AddHostedService<MediaRecognitionBackgroundService>();
         // LLM Chat
-        builder.Services.AddSingleton<AIFunction>(resolver =>
+        builder.Services.AddKeyedSingleton<AIFunction>(ModelInfoFormatter.ToolServiceKey, (resolver, _) =>
         {
             var modelOptions = resolver.GetRequiredService<ModelCommandHandlerOptions>();
             return AIFunctionFactory.Create(
-                () => ModelInfoFormatter.Build(modelOptions),
-                "get_model_info",
-                "Возвращает информацию о модели. Используй этот инструмент, если пользователь спрашивает, на какой модели ты работаешь.");
+                () => ModelInfoFormatter.BuildToolResponse(modelOptions),
+                ModelInfoFormatter.ToolName,
+                ModelInfoFormatter.ToolHelp);
         });
         builder.Services.AddSingleton(new DefaultLlmChatHandlerOptions(config.Telegram.BotName, config.Llm.DefaultResponse));
         builder.Services.AddSingleton<ILlmChatHandler, DefaultLlmChatHandler>();
