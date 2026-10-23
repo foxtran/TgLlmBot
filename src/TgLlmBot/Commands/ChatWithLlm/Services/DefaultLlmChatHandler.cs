@@ -46,6 +46,7 @@ public partial class DefaultLlmChatHandler : ILlmChatHandler
     private readonly TelegramBotClient _bot;
     private readonly IChatClient _chatClient;
     private readonly LlmCapabilitiesConfiguration _capabilities;
+    private readonly AIFunction _modelInfoTool;
     private readonly ILlmLimitsService _limits;
     private readonly ILogger<DefaultLlmChatHandler> _logger;
     private readonly IMediaGroupTracker _mediaGroupTracker;
@@ -64,6 +65,7 @@ public partial class DefaultLlmChatHandler : ILlmChatHandler
         TelegramBotClient bot,
         IChatClient chatClient,
         LlmCapabilitiesConfiguration capabilities,
+        AIFunction modelInfoTool,
         IMediaPreparer preparer,
         IMediaGroupTracker mediaGroupTracker,
         ISystemPromptService systemPrompt,
@@ -79,6 +81,7 @@ public partial class DefaultLlmChatHandler : ILlmChatHandler
         ArgumentNullException.ThrowIfNull(bot);
         ArgumentNullException.ThrowIfNull(chatClient);
         ArgumentNullException.ThrowIfNull(capabilities);
+        ArgumentNullException.ThrowIfNull(modelInfoTool);
         ArgumentNullException.ThrowIfNull(preparer);
         ArgumentNullException.ThrowIfNull(mediaGroupTracker);
         ArgumentNullException.ThrowIfNull(systemPrompt);
@@ -93,6 +96,7 @@ public partial class DefaultLlmChatHandler : ILlmChatHandler
         _bot = bot;
         _chatClient = chatClient;
         _capabilities = capabilities;
+        _modelInfoTool = modelInfoTool;
         _preparer = preparer;
         _mediaGroupTracker = mediaGroupTracker;
         _systemPrompt = systemPrompt;
@@ -145,7 +149,7 @@ public partial class DefaultLlmChatHandler : ILlmChatHandler
             var chatOptions = new ChatOptions
             {
                 ConversationId = Guid.NewGuid().ToString("N"),
-                Tools = [.. tools],
+                Tools = [.. tools, _modelInfoTool],
                 MaxOutputTokens = 81920,
                 AllowMultipleToolCalls = true,
                 ToolMode = new AutoChatToolMode(),
