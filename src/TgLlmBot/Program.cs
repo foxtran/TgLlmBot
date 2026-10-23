@@ -335,14 +335,7 @@ public partial class Program
         builder.Services.AddSingleton(new MediaRecognitionBackgroundServiceOptions(MediaSweepInterval, config.Telegram.BotName));
         builder.Services.AddHostedService<MediaRecognitionBackgroundService>();
         // LLM Chat
-        builder.Services.AddKeyedSingleton<AIFunction>(ModelInfoFormatter.ToolServiceKey, (resolver, _) =>
-        {
-            var modelOptions = resolver.GetRequiredService<ModelCommandHandlerOptions>();
-            return AIFunctionFactory.Create(
-                () => ModelInfoFormatter.BuildToolResponse(modelOptions),
-                ModelInfoFormatter.ToolName,
-                ModelInfoFormatter.ToolHelp);
-        });
+        builder.Services.AddModelInfoTool();
         builder.Services.AddSingleton(new DefaultLlmChatHandlerOptions(config.Telegram.BotName, config.Llm.DefaultResponse));
         builder.Services.AddSingleton<ILlmChatHandler, DefaultLlmChatHandler>();
         // DataAccess
